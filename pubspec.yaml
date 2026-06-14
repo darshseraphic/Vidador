@@ -1,7 +1,7 @@
 name: vidador
 description: "Strict ultra minimalistic discipline and biometric tracking engine."
 publish_to: 'none'
-version: 1.0.0+1
+version: 0.1.0
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -27,24 +27,17 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-# EXPLICIT TOP-LEVEL AUTOMATION METRICS (MUST HAVE ZERO INDENTATION)
+# EXPLICIT TOP-LEVEL AUTOMATION METRICS
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: false
   image_path: "assets/logo.png"
   remove_alpha_ios: true
 
-# ULTRA-MINIMAL STARK NATIVE SPLASH SPECIFICATION WITH LOGO ASSET
+# ULTRA-MINIMAL PLAIN BLACK NATIVE SPLASH ENGINE
 flutter_native_splash:
   color: "#000000"
-  image: "assets/logo.png"
-
-  # Pin the logo asset to center matrix with no scaling or stretching
-  android_gravity: center
-  ios_content_mode: center
-
-  # Core execution matrix parameters for modern Android 12+ devices
+  fullscreen: true
+  # Removing the 'image' property completely ensures a completely plain dark canvas
   android_12:
     color: "#000000"
-    icon_background_color: "#000000"
-    image: "assets/logo.png"
