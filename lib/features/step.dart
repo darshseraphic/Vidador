@@ -5,12 +5,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../main.dart';
 
-// --- 1. STATE NOTIFIER WITH AUTOMATIC ANDROID PEDOMETER ---
+// --- 1. STATE NOTIFIER WITH SECURE ANDROID HARDWARE PIECE ---
 class StepNotifier extends Notifier<Map<String, int>> {
   static const String _boxName = 'vidador_steps_box';
   StreamSubscription<StepCount>? _pedometerSubscription;
+
+  // Track live initialization diagnostics securely
+  String hardwareDiagnosticStatus = "INITIALIZING SYSTEM...";
 
   @override
   Map<String, int> build() {
@@ -27,25 +31,46 @@ class StepNotifier extends Notifier<Map<String, int>> {
 
     state = rawMap.map((key, value) => MapEntry(key.toString(), value as int));
 
-    // Wire up live hardware step tracking
-    _initAndroidPedometer();
+    // Safely check permission permissions prior to activating physical motherboard channels
+    _verifyAndConnectHardware();
+  }
+
+  Future<void> _verifyAndConnectHardware() async {
+    var status = await Permission.activityRecognition.status;
+    if (status.isGranted) {
+      _initAndroidPedometer();
+    } else {
+      hardwareDiagnosticStatus = "WAITING FOR PRIVILEGE CLEARANCE...";
+    }
   }
 
   void _initAndroidPedometer() {
-    _pedometerSubscription = Pedometer.stepCountStream.listen(
-      _onStepCountUpdate,
-      onError: (error) => debugPrint("Pedometer Error: $error"),
-    );
+    try {
+      _pedometerSubscription?.cancel();
+      _pedometerSubscription = Pedometer.stepCountStream.listen(
+        _onStepCountUpdate,
+        onError: (error) {
+          debugPrint("Pedometer Error: $error");
+          hardwareDiagnosticStatus = "HARDWARE CHIP SLEEPING OR DISCONNECTED";
+        },
+      );
+      hardwareDiagnosticStatus = "CONNECTED. WALK 10+ STEPS TO SYNC";
+    } catch (e) {
+      hardwareDiagnosticStatus = "CHANNEL FAILURE: $e";
+    }
   }
 
   Future<void> _onStepCountUpdate(StepCount event) async {
     final box = Hive.box(_boxName);
     final now = DateTime.now();
-    final String todayKey = '${now.year}-${now.month - 1}-${now.day}';
+    // FIXED: Removed the erroneous "- 1" to securely unify dates with the UI layers
+    final String todayKey = '${now.year}-${now.month}-${now.day}';
 
     int systemSteps = event.steps;
     int lastSystemSteps = box.get('last_system_steps', defaultValue: systemSteps);
     String lastSavedDate = box.get('last_saved_date', defaultValue: todayKey);
+
+    hardwareDiagnosticStatus = "HARDWARE PIPELINE: ACTIVE";
 
     if (lastSavedDate != todayKey) {
       await box.put('last_saved_date', todayKey);
@@ -55,7 +80,7 @@ class StepNotifier extends Notifier<Map<String, int>> {
 
     int stepDifference = systemSteps - lastSystemSteps;
 
-    // Handle device boot lifecycle resets
+    // Handle device boot lifecycle resets cleanly
     if (stepDifference < 0) {
       await box.put('last_system_steps', systemSteps);
       stepDifference = 0;
@@ -83,8 +108,8 @@ class StepNotifier extends Notifier<Map<String, int>> {
     await box.put('records', state);
   }
 
-  int getStepsForDate(String dateKey) {
-    return state[dateKey] ?? 0;
+  void kickstartSensorManual() {
+    _verifyAndConnectHardware();
   }
 }
 
@@ -105,6 +130,15 @@ class _StepScreenState extends ConsumerState<StepScreen> {
     'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
   ];
   static const List<String> _dayHeaders = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+  @override
+  void initState() {
+    super.initState();
+    // Force prompt permission checking immediately when clicking into this tab
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(stepProvider.notifier).kickstartSensorManual();
+    });
+  }
 
   List<int> _getDaysInMonths(int year) {
     bool isLeapYear = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
@@ -266,10 +300,13 @@ class _StepScreenState extends ConsumerState<StepScreen> {
   Widget build(BuildContext context) {
     final isDark = ref.watch(themeProvider);
     final stepRecords = ref.watch(stepProvider);
+    final diagnostics = ref.watch(stepProvider.notifier).hardwareDiagnosticStatus;
 
     final now = DateTime.now();
     final currentYear = now.year;
-    final String todayKey = '$currentYear-${now.month - 1}-${now.day}';
+
+    // FIXED: Synchronized matching tracking key maps
+    final String todayKey = '$currentYear-${now.month}-${now.day}';
     final int todaySteps = stepRecords[todayKey] ?? 0;
 
     final List<int> daysInMonths = _getDaysInMonths(currentYear);
@@ -279,7 +316,6 @@ class _StepScreenState extends ConsumerState<StepScreen> {
     final ruleBorder = isDark ? const Color(0xFF1F1F1F) : const Color(0xFFE5E5E5);
     final List<String> shortDays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
-    // Deep Compute Telemetry Analytics across all active data stores
     int totalSteps = 0;
     int maxSteps = 0;
     int activeDays = 0;
@@ -314,9 +350,18 @@ class _StepScreenState extends ConsumerState<StepScreen> {
             // TOP HEADLINE ROW
             Padding(
               padding: const EdgeInsets.fromLTRB(20.0, 16.0, 20.0, 12.0),
-              child: Text(
-                'STEPS TELEMETRY QUANTIZER',
-                style: GoogleFonts.robotoMono(color: textMain, fontSize: 13, fontWeight: FontWeight.bold),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'STEPS TELEMETRY QUANTIZER',
+                    style: GoogleFonts.robotoMono(color: textMain, fontSize: 13, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '[$todaySteps]',
+                    style: GoogleFonts.robotoMono(color: textMain, fontSize: 13, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
             ),
 
@@ -336,10 +381,20 @@ class _StepScreenState extends ConsumerState<StepScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
+                          "DIAGNOSTIC ARCHITECTURE VECTOR",
+                          style: GoogleFonts.robotoMono(color: textMain.withOpacity(0.5), fontSize: 8, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          diagnostics.toUpperCase(),
+                          style: GoogleFonts.robotoMono(color: Colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
                           "BIOLOGICAL STEP KINETICS PROFILE",
                           style: GoogleFonts.robotoMono(color: textMain.withOpacity(0.5), fontSize: 8, fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 3),
                         Text(
                           biologicalTier,
                           style: GoogleFonts.robotoMono(color: textMain, fontSize: 11, fontWeight: FontWeight.bold),
@@ -355,7 +410,7 @@ class _StepScreenState extends ConsumerState<StepScreen> {
                       final int targetWeekday = index + 1;
                       final int dayDiff = targetWeekday - now.weekday;
                       final DateTime targetDate = now.add(Duration(days: dayDiff));
-                      final String key = '${targetDate.year}-${targetDate.month - 1}-${targetDate.day}';
+                      final String key = '${targetDate.year}-${targetDate.month}-${targetDate.day}';
                       final int steps = stepRecords[key] ?? 0;
 
                       const double maxHeightLimit = 10000.0;
@@ -470,14 +525,13 @@ class _StepScreenState extends ConsumerState<StepScreen> {
                               if (gridIndex < leadingBlanks) return const SizedBox.shrink();
 
                               final int day = gridIndex - leadingBlanks + 1;
-                              final String dateKey = '$currentYear-$monthIndex-$day';
+                              final String dateKey = '$currentYear-${monthIndex + 1}-$day';
                               final int daySteps = stepRecords[dateKey] ?? 0;
 
                               Color boxColor;
                               Color borderColor;
                               Color textColor;
 
-                              // STRATIFIED COLOR RULES with Empty 0-Step Filtering
                               if (daySteps == 0) {
                                 boxColor = Colors.transparent;
                                 borderColor = ruleBorder;
