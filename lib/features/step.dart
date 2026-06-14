@@ -485,20 +485,20 @@ class _StepScreenState extends ConsumerState<StepScreen> {
                               } else {
                                 textColor = const Color(0xFFFFFFFF);
                                 if (daySteps >= 10000) {
-                                  boxColor = const Color(0xFF000000);
-                                  borderColor = const Color(0xFF000000);
+                                  boxColor = const Color(0xFF450003);
+                                  borderColor = const Color(0xFF450003);
                                 } else if (daySteps >= 8000) {
-                                  boxColor = const Color(0xFF111111);
-                                  borderColor = const Color(0xFF111111);
+                                  boxColor = const Color(0xFF5C0002);
+                                  borderColor = const Color(0xFF5C0002);
                                 } else if (daySteps >= 6000) {
-                                  boxColor = const Color(0xFF222222);
-                                  borderColor = const Color(0xFF222222);
+                                  boxColor = const Color(0xFF94090D);
+                                  borderColor = const Color(0xFF94090D);
                                 } else if (daySteps >= 4000) {
-                                  boxColor = const Color(0xFF343434);
-                                  borderColor = const Color(0xFF343434);
+                                  boxColor = const Color(0xFFD40D12);
+                                  borderColor = const Color(0xFFD40D12);
                                 } else {
-                                  boxColor = const Color(0xFF666666);
-                                  borderColor = const Color(0xFF666666);
+                                  boxColor = const Color(0xFFFF1D23);
+                                  borderColor = const Color(0xFFFF1D23);
                                 }
                               }
 
@@ -540,23 +540,23 @@ class _StepScreenState extends ConsumerState<StepScreen> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    Container(width: 7, height: 7, decoration: BoxDecoration(color: const Color(0xFF666666), borderRadius: BorderRadius.circular(1.0))),
+                    Container(width: 7, height: 7, decoration: BoxDecoration(color: const Color(0xFFFF1D23), borderRadius: BorderRadius.circular(1.0))),
                     const SizedBox(width: 6),
                     Text('1-4K', style: TextStyle(color: textSub, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.02)),
                     const SizedBox(width: 16),
-                    Container(width: 7, height: 7, decoration: BoxDecoration(color: const Color(0xFF343434), borderRadius: BorderRadius.circular(1.0))),
+                    Container(width: 7, height: 7, decoration: BoxDecoration(color: const Color(0xFFD40D12), borderRadius: BorderRadius.circular(1.0))),
                     const SizedBox(width: 6),
                     Text('4K-6K', style: TextStyle(color: textSub, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.02)),
                     const SizedBox(width: 16),
-                    Container(width: 7, height: 7, decoration: BoxDecoration(color: const Color(0xFF222222), borderRadius: BorderRadius.circular(1.0))),
+                    Container(width: 7, height: 7, decoration: BoxDecoration(color: const Color(0xFF94090D), borderRadius: BorderRadius.circular(1.0))),
                     const SizedBox(width: 6),
                     Text('6K-8K', style: TextStyle(color: textSub, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.02)),
                     const SizedBox(width: 16),
-                    Container(width: 7, height: 7, decoration: BoxDecoration(color: const Color(0xFF111111), borderRadius: BorderRadius.circular(1.0))),
+                    Container(width: 7, height: 7, decoration: BoxDecoration(color: const Color(0xFF5C0002), borderRadius: BorderRadius.circular(1.0))),
                     const SizedBox(width: 6),
                     Text('8K-10K', style: TextStyle(color: textSub, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.02)),
                     const SizedBox(width: 16),
-                    Container(width: 7, height: 7, decoration: BoxDecoration(color: const Color(0xFF000000), borderRadius: BorderRadius.circular(1.0))),
+                    Container(width: 7, height: 7, decoration: BoxDecoration(color: const Color(0xFF450003), borderRadius: BorderRadius.circular(1.0))),
                     const SizedBox(width: 6),
                     Text('10K+', style: TextStyle(color: textSub, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.02)),
                   ],
