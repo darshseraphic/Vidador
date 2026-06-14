@@ -206,7 +206,6 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
     Color buttonOperatorBg = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
     Color buttonOperatorText = isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF);
 
-    // Dynamic contrast swaps when completion phase is reached
     if (timerState.isFinished) {
       bgMain = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
       colorForeground = isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF);
@@ -249,14 +248,14 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
               Container(height: 0.8, color: colorForeground),
               const SizedBox(height: 24),
 
-              // PREMIUM HIGH-CONTRAST TIMER ARCHITECTURE
+              // PREMIUM BRUTALIST TIMER MODULE
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Left Complement Block (Inverted Theme)
+                  // Left Accent Block (Solid Block with Inverted Interior Square)
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: 72,
+                    height: 72,
                     decoration: BoxDecoration(
                       color: colorForeground,
                       border: Border.all(color: colorForeground, width: 0.8),
@@ -265,18 +264,15 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
                       child: Container(
                         width: 8,
                         height: 8,
-                        decoration: BoxDecoration(
-                          color: bgMain,
-                          shape: BoxShape.circle,
-                        ),
+                        color: bgMain, // Interior solid square vector
                       ),
                     ),
                   ),
 
-                  // Central Minimal Countdown Engine Card
+                  // Central Full-Scale Countdown Engine Card
                   Expanded(
                     child: Container(
-                      height: 48,
+                      height: 72,
                       decoration: BoxDecoration(
                         color: containerBg,
                         border: Border(
@@ -289,19 +285,19 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
                         timeString,
                         style: TextStyle(
                           color: colorForeground,
-                          fontSize: 28,
+                          fontSize: 48, // Restored prominent visual sizing hierarchy
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Inter',
-                          letterSpacing: -0.5,
+                          letterSpacing: -1.0,
                         ),
                       ),
                     ),
                   ),
 
-                  // Right Complement Block (Inverted Theme)
+                  // Right Accent Block (Solid Block with Inverted Interior Square)
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: 72,
+                    height: 72,
                     decoration: BoxDecoration(
                       color: colorForeground,
                       border: Border.all(color: colorForeground, width: 0.8),
@@ -310,10 +306,7 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
                       child: Container(
                         width: 8,
                         height: 8,
-                        decoration: BoxDecoration(
-                          color: bgMain,
-                          shape: BoxShape.circle,
-                        ),
+                        color: bgMain, // Interior solid square vector
                       ),
                     ),
                   ),
