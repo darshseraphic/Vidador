@@ -11,7 +11,6 @@ dependencies:
     sdk: flutter
   hive_flutter: ^1.1.0
   flutter_riverpod: ^2.5.1
-
   intl: ^0.19.0
   url_launcher: ^6.3.1
   google_fonts: ^8.1.0
@@ -21,6 +20,30 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.8
 
 flutter:
   uses-material-design: true
+
+# EXPLICIT TOP-LEVEL AUTOMATION METRICS (MUST HAVE ZERO INDENTATION)
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: false
+  image_path: "assets/logo.png"
+  remove_alpha_ios: true
+
+# ULTRA-MINIMAL STARK NATIVE SPLASH SPECIFICATION WITH LOGO ASSET
+flutter_native_splash:
+  color: "#000000"
+  image: "assets/logo.png"
+
+  # Pin the logo asset to center matrix with no scaling or stretching
+  android_gravity: center
+  ios_content_mode: center
+
+  # Core execution matrix parameters for modern Android 12+ devices
+  android_12:
+    color: "#000000"
+    icon_background_color: "#000000"
+    image: "assets/logo.png"
