@@ -9,18 +9,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  # DATA PERSISTENCE MANAGEMENT
   hive_flutter: ^1.1.0
-
-  # APPLICATION STATE PIPELINE
   flutter_riverpod: ^2.5.1
 
-  # UTILITIES AND EXTERNAL LINK ROUTING
   intl: ^0.19.0
   url_launcher: ^6.3.1
   google_fonts: ^8.1.0
   pedometer: ^4.2.0
+  file_picker: ^11.0.2
 
 dev_dependencies:
   flutter_test:
