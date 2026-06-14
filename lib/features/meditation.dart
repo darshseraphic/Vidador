@@ -86,14 +86,18 @@ class MeditationTimerNotifier extends Notifier<TimerState> {
   }
 
   Future<void> _initAndLoad() async {
-    final box = await Hive.openBox(_boxName);
-    final List<dynamic>? storedRaw = box.get('entries');
+    try {
+      final box = Hive.isBoxOpen(_boxName) ? Hive.box(_boxName) : await Hive.openBox(_boxName);
+      final List<dynamic>? storedRaw = box.get('entries');
 
-    if (storedRaw != null && storedRaw.isNotEmpty) {
-      final loadedHistory = storedRaw
-          .map((item) => MeditationEntry.fromMap(Map<String, dynamic>.from(item)))
-          .toList();
-      state = state.copyWith(history: loadedHistory);
+      if (storedRaw != null && storedRaw.isNotEmpty) {
+        final loadedHistory = storedRaw
+            .map((item) => MeditationEntry.fromMap(Map<String, dynamic>.from(item as Map)))
+            .toList();
+        state = state.copyWith(history: loadedHistory);
+      }
+    } catch (e) {
+      debugPrint("Meditation Load Error: $e");
     }
   }
 
@@ -119,13 +123,22 @@ class MeditationTimerNotifier extends Notifier<TimerState> {
         _ticker?.cancel();
 
         final completedMinutes = state.initialSeconds ~/ 60;
-        _addMeditationLog(completedMinutes > 0 ? completedMinutes : 1, false);
+        final newEntry = MeditationEntry(
+          id: DateTime.now().microsecondsSinceEpoch.toString(),
+          durationMinutes: completedMinutes > 0 ? completedMinutes : 1,
+          timestamp: DateTime.now(),
+          isInterrupted: false,
+        );
 
+        // Atomic payload state update to prevent UI/DB race conditions
         state = state.copyWith(
           remainingSeconds: 0,
           isRunning: false,
           isFinished: true,
+          history: [newEntry, ...state.history],
         );
+
+        _saveToDisk();
       } else {
         state = state.copyWith(
           remainingSeconds: state.remainingSeconds - 1,
@@ -143,10 +156,18 @@ class MeditationTimerNotifier extends Notifier<TimerState> {
     _ticker?.cancel();
 
     final elapsedSeconds = state.initialSeconds - state.remainingSeconds;
+    List<MeditationEntry> updatedHistory = state.history;
 
+    // Process Interrupted Record Logging Atomically
     if (elapsedSeconds > 0) {
       final elapsedMinutes = elapsedSeconds ~/ 60;
-      _addMeditationLog(elapsedMinutes > 0 ? elapsedMinutes : 1, true);
+      final newEntry = MeditationEntry(
+        id: DateTime.now().microsecondsSinceEpoch.toString(),
+        durationMinutes: elapsedMinutes > 0 ? elapsedMinutes : 1,
+        timestamp: DateTime.now(),
+        isInterrupted: true,
+      );
+      updatedHistory = [newEntry, ...state.history];
     }
 
     state = TimerState(
@@ -154,20 +175,12 @@ class MeditationTimerNotifier extends Notifier<TimerState> {
       initialSeconds: 0,
       isRunning: false,
       isFinished: false,
-      history: state.history,
-    );
-  }
-
-  Future<void> _addMeditationLog(int minutes, bool isInterrupted) async {
-    final newEntry = MeditationEntry(
-      id: DateTime.now().microsecondsSinceEpoch.toString(),
-      durationMinutes: minutes,
-      timestamp: DateTime.now(),
-      isInterrupted: isInterrupted,
+      history: updatedHistory,
     );
 
-    state = state.copyWith(history: [newEntry, ...state.history]);
-    await _saveToDisk();
+    if (elapsedSeconds > 0) {
+      _saveToDisk();
+    }
   }
 
   Future<void> deleteLog(String id) async {
@@ -177,8 +190,12 @@ class MeditationTimerNotifier extends Notifier<TimerState> {
   }
 
   Future<void> _saveToDisk() async {
-    final box = Hive.box(_boxName);
-    await box.put('entries', state.history.map((e) => e.toMap()).toList());
+    try {
+      final box = Hive.isBoxOpen(_boxName) ? Hive.box(_boxName) : await Hive.openBox(_boxName);
+      await box.put('entries', state.history.map((e) => e.toMap()).toList());
+    } catch (e) {
+      debugPrint("Meditation Save Error: $e");
+    }
   }
 }
 
@@ -214,10 +231,15 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
       buttonOperatorText = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
     }
 
-    final int displayMins = timerState.remainingSeconds ~/ 60;
-    final int displaySecs = timerState.remainingSeconds % 60;
-    final String timeString =
-        '${displayMins.toString().padLeft(2, '0')}:${displaySecs.toString().padLeft(2, '0')}';
+    // Fixed formatting mechanism handling precise HH:MM:SS expansions
+    final int totalSeconds = timerState.remainingSeconds;
+    final int hours = totalSeconds ~/ 3600;
+    final int displayMins = (totalSeconds % 3600) ~/ 60;
+    final int displaySecs = totalSeconds % 60;
+
+    final String timeString = hours > 0
+        ? '${hours.toString().padLeft(2, '0')}:${displayMins.toString().padLeft(2, '0')}:${displaySecs.toString().padLeft(2, '0')}'
+        : '${displayMins.toString().padLeft(2, '0')}:${displaySecs.toString().padLeft(2, '0')}';
 
     return Scaffold(
       backgroundColor: bgMain,
@@ -248,69 +270,25 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
               Container(height: 0.8, color: colorForeground),
               const SizedBox(height: 24),
 
-              // PREMIUM BRUTALIST TIMER MODULE
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Left Accent Block (Solid Block with Inverted Interior Square)
-                  Container(
-                    width: 72,
-                    height: 72,
-                    decoration: BoxDecoration(
-                      color: colorForeground,
-                      border: Border.all(color: colorForeground, width: 0.8),
-                    ),
-                    child: Center(
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        color: bgMain, // Interior solid square vector
-                      ),
-                    ),
+              // CLEAN LOW-PROFILE TIMER CARD (Fixed Height: 80)
+              Container(
+                width: double.infinity,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: containerBg,
+                  border: Border.all(color: colorForeground, width: 0.8),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  timeString,
+                  style: TextStyle(
+                    color: colorForeground,
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Inter',
+                    letterSpacing: -1.0,
                   ),
-
-                  // Central Full-Scale Countdown Engine Card
-                  Expanded(
-                    child: Container(
-                      height: 72,
-                      decoration: BoxDecoration(
-                        color: containerBg,
-                        border: Border(
-                          top: BorderSide(color: colorForeground, width: 0.8),
-                          bottom: BorderSide(color: colorForeground, width: 0.8),
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        timeString,
-                        style: TextStyle(
-                          color: colorForeground,
-                          fontSize: 48, // Restored prominent visual sizing hierarchy
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Inter',
-                          letterSpacing: -1.0,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Right Accent Block (Solid Block with Inverted Interior Square)
-                  Container(
-                    width: 72,
-                    height: 72,
-                    decoration: BoxDecoration(
-                      color: colorForeground,
-                      border: Border.all(color: colorForeground, width: 0.8),
-                    ),
-                    child: Center(
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        color: bgMain, // Interior solid square vector
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
               const SizedBox(height: 24),
 
