@@ -37,10 +37,21 @@ class StepNotifier extends Notifier<Map<String, int>> {
 
   Future<void> _verifyAndConnectHardware() async {
     var status = await Permission.activityRecognition.status;
+
+    // FIX: If permission is not already granted, explicitly request it from the user
+    if (!status.isGranted) {
+      status = await Permission.activityRecognition.request();
+    }
+
     if (status.isGranted) {
       _initAndroidPedometer();
+    } else if (status.isPermanentlyDenied) {
+      hardwareDiagnosticStatus = "PERMISSION PERMANENTLY DENIED. GO TO SETTINGS.";
+      state = Map<String, int>.from(state); // Forces Riverpod to rebuild and update the UI message
+      openAppSettings(); // Automatically opens phone settings so the user can fix it
     } else {
-      hardwareDiagnosticStatus = "WAITING FOR PRIVILEGE CLEARANCE...";
+      hardwareDiagnosticStatus = "PRIVILEGE DENIED. CANNOT TRACK STEPS.";
+      state = Map<String, int>.from(state); // Forces Riverpod to rebuild and update the UI message
     }
   }
 
@@ -52,11 +63,14 @@ class StepNotifier extends Notifier<Map<String, int>> {
         onError: (error) {
           debugPrint("Pedometer Error: $error");
           hardwareDiagnosticStatus = "HARDWARE CHIP SLEEPING OR DISCONNECTED";
+          state = Map<String, int>.from(state); // Forces Riverpod UI rebuild
         },
       );
       hardwareDiagnosticStatus = "CONNECTED. WALK 10+ STEPS TO SYNC";
+      state = Map<String, int>.from(state); // Forces Riverpod UI rebuild
     } catch (e) {
       hardwareDiagnosticStatus = "CHANNEL FAILURE: $e";
+      state = Map<String, int>.from(state); // Forces Riverpod UI rebuild
     }
   }
 
@@ -92,6 +106,9 @@ class StepNotifier extends Notifier<Map<String, int>> {
 
       await box.put('last_system_steps', systemSteps);
       await logSteps(todayKey, updatedSteps);
+    } else {
+      // Force UI refresh to reveal the "HARDWARE PIPELINE: ACTIVE" text change immediately
+      state = Map<String, int>.from(state);
     }
   }
 
@@ -156,7 +173,7 @@ class _StepScreenState extends ConsumerState<StepScreen> {
             child: Text(
               title,
               style: GoogleFonts.robotoMono(
-                color: primary.withOpacity(0.6),
+                color: primary.withValues(alpha: 0.6),
                 fontSize: 9,
                 fontWeight: FontWeight.bold,
               ),
@@ -373,26 +390,27 @@ class _StepScreenState extends ConsumerState<StepScreen> {
               child: Column(
                 children: [
                   // Profile Performance Tier Block
+                  // Profile Performance Tier Block
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(border: Border.all(color: textMain.withOpacity(0.25), width: 0.8)),
+                    decoration: BoxDecoration(border: Border.all(color: textMain.withValues(alpha: 0.25), width: 0.8)),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           "DIAGNOSTIC ARCHITECTURE VECTOR",
-                          style: GoogleFonts.robotoMono(color: textMain.withOpacity(0.5), fontSize: 8, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.robotoMono(color: textMain.withValues(alpha: 0.5), fontSize: 8, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 3),
                         Text(
                           diagnostics.toUpperCase(),
-                          style: GoogleFonts.robotoMono(color: Colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.robotoMono(color: Colors.redAccent, fontSize: 8, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           "BIOLOGICAL STEP KINETICS PROFILE",
-                          style: GoogleFonts.robotoMono(color: textMain.withOpacity(0.5), fontSize: 8, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.robotoMono(color: textMain.withValues(alpha: 0.5), fontSize: 8, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 3),
                         Text(
