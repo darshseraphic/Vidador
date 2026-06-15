@@ -2,6 +2,24 @@
 
 #### 1. EXECUTIVE MANIFESTO & SYSTEM ARCHITECTURE PHILOSOPHY
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/76745c55-6c74-4c01-8281-cd8d59aa85c1" alt="1" width="19%" />
+  <img src="https://github.com/user-attachments/assets/b7ced229-037b-4b10-8a9e-93899233be97" alt="2" width="19%" />
+  <img src="https://github.com/user-attachments/assets/8223ce96-a39b-4c9e-a6ba-31140d7b5473" alt="3" width="19%" />
+  <img src="https://github.com/user-attachments/assets/55a136eb-bf83-422e-a9e4-cb7278657794" alt="4" width="19%" />
+  <img src="https://github.com/user-attachments/assets/604cb376-499d-46d1-a31e-e0b4ac5730fe" alt="5" width="19%" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b88371c8-a19d-4dbf-9c96-c87a8ffbe646" alt="6" width="19%" />
+  <img src="https://github.com/user-attachments/assets/5e9d9d69-ee23-4584-b9e5-a91ec44b08fe" alt="7" width="19%" />
+  <img src="https://github.com/user-attachments/assets/4224ede2-8b14-4a44-9345-4b7c02bd139f" alt="8" width="19%" />
+  <img src="https://github.com/user-attachments/assets/2e3afeb5-b706-4ef1-868a-4b9dc7948cdc" alt="9" width="19%" />
+  <img src="https://github.com/user-attachments/assets/170491c7-9836-493d-bad1-5fc8055355fc" alt="10" width="19%" />
+</p>
+
+
+
 #### 1.1 The Crisis of Gamified Biometrics
 
 In the contemporary consumer software ecosystem, health and fitness tracking applications have degenerated into gamified dopamine loops. Modern biometrics trackers deploy hyper-saturated color gradients, continuous ring-closing animations, complex multi-axis graphical charts, arbitrary behavioral badges, and aggressive push notification loops. This layout strategy is explicitly engineered to capture user attention, maximizing interaction frequency under the guise of wellness optimization.
