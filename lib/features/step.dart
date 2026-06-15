@@ -390,32 +390,113 @@ class _StepScreenState extends ConsumerState<StepScreen> {
               child: Column(
                 children: [
                   // Profile Performance Tier Block
-                  // Profile Performance Tier Block
+                  // Profile Performance Tier Block — CYBERPUNK BRUTALIST REBUILD
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(border: Border.all(color: textMain.withValues(alpha: 0.25), width: 0.8)),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF050505) : const Color(0xFFFAFAFA),
+                      border: Border.all(
+                        color: textMain.withValues(alpha: 0.8),
+                        width: 1.2, // Sharper, heavier border lines
+                      ),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "DIAGNOSTIC ARCHITECTURE VECTOR",
-                          style: GoogleFonts.robotoMono(color: textMain.withValues(alpha: 0.5), fontSize: 8, fontWeight: FontWeight.bold),
+                        // TOP VECTOR: DIAGNOSTICS
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "DIAGNOSTIC ARCHITECTURE VECTOR",
+                                    style: GoogleFonts.robotoMono(
+                                      color: textMain.withValues(alpha: 0.4),
+                                      fontSize: 7.5,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 0.05,
+                                    ),
+                                  ),
+                                  Text(
+                                    "[SYS_VEC_01]",
+                                    style: GoogleFonts.robotoMono(
+                                      color: textMain.withValues(alpha: 0.3),
+                                      fontSize: 7.5,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "● ",
+                                    style: GoogleFonts.robotoMono(
+                                      color: diagnostics.contains("ACTIVE") || diagnostics.contains("CONNECTED")
+                                          ? const Color(0xFF00FF66) // Neon Green when active/connected
+                                          : Colors.redAccent,
+                                      fontSize: 9,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      diagnostics.toUpperCase(),
+                                      style: GoogleFonts.robotoMono(
+                                        color: diagnostics.contains("ACTIVE") || diagnostics.contains("CONNECTED")
+                                            ? textMain
+                                            : Colors.redAccent,
+                                        fontSize: 8.5,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 0.02,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 3),
-                        Text(
-                          diagnostics.toUpperCase(),
-                          style: GoogleFonts.robotoMono(color: Colors.redAccent, fontSize: 8, fontWeight: FontWeight.bold),
+
+                        // SOLID SEPARATOR SYSTEM RULE
+                        Container(
+                          height: 1.2,
+                          width: double.infinity,
+                          color: textMain.withValues(alpha: 0.8),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          "BIOLOGICAL STEP KINETICS PROFILE",
-                          style: GoogleFonts.robotoMono(color: textMain.withValues(alpha: 0.5), fontSize: 8, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          biologicalTier,
-                          style: GoogleFonts.robotoMono(color: textMain, fontSize: 11, fontWeight: FontWeight.bold),
+
+                        // BOTTOM VECTOR: KINETICS PROFILE
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "BIOLOGICAL STEP KINETICS PROFILE",
+                                style: GoogleFonts.robotoMono(
+                                  color: textMain.withValues(alpha: 0.4),
+                                  fontSize: 7.5,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.05,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                "// ${biologicalTier.toUpperCase()}",
+                                style: GoogleFonts.robotoMono(
+                                  color: textMain,
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: -0.02,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

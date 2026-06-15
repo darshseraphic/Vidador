@@ -130,7 +130,6 @@ class MeditationTimerNotifier extends Notifier<TimerState> {
           isInterrupted: false,
         );
 
-        // Atomic payload state update to prevent UI/DB race conditions
         state = state.copyWith(
           remainingSeconds: 0,
           isRunning: false,
@@ -158,7 +157,6 @@ class MeditationTimerNotifier extends Notifier<TimerState> {
     final elapsedSeconds = state.initialSeconds - state.remainingSeconds;
     List<MeditationEntry> updatedHistory = state.history;
 
-    // Process Interrupted Record Logging Atomically
     if (elapsedSeconds > 0) {
       final elapsedMinutes = elapsedSeconds ~/ 60;
       final newEntry = MeditationEntry(
@@ -231,7 +229,6 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
       buttonOperatorText = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
     }
 
-    // Fixed formatting mechanism handling precise HH:MM:SS expansions
     final int totalSeconds = timerState.remainingSeconds;
     final int hours = totalSeconds ~/ 3600;
     final int displayMins = (totalSeconds % 3600) ~/ 60;
@@ -270,7 +267,7 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
               Container(height: 0.8, color: colorForeground),
               const SizedBox(height: 24),
 
-              // CLEAN LOW-PROFILE TIMER CARD (Fixed Height: 80)
+              // CLEAN LOW-PROFILE TIMER CARD
               Container(
                 width: double.infinity,
                 height: 80,
@@ -388,7 +385,7 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
               ),
               const SizedBox(height: 16),
 
-              // PERSISTENT HISTORY LIST ENGINE
+              // PERSISTENT HISTORY LIST ENGINE (MIRRORED EXACTLY FROM SLEEP.DART)
               Expanded(
                 child: timerState.history.isEmpty
                     ? Center(
@@ -408,10 +405,12 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
                   itemBuilder: (context, index) {
                     final item = timerState.history[index];
                     final String entryTime = DateFormat('HH:mm').format(item.timestamp);
-                    final String entryDate = DateFormat('MMM dd').format(item.timestamp).toUpperCase();
+                    final String calendarDate = DateFormat('MMM dd').format(item.timestamp).toUpperCase();
+                    final String statusLabel = item.isInterrupted ? 'INTERRUPTED' : 'COMPLETED';
 
+                    // Clean vibrant red boundary mutation for interruptions
                     final Color currentBorderColor = item.isInterrupted
-                        ? const Color(0xFF5F0E0D)
+                        ? Colors.red
                         : colorForeground;
 
                     return Padding(
@@ -425,39 +424,30 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  entryTime,
+                                  '[$calendarDate]',
                                   style: TextStyle(
-                                    color: currentBorderColor,
-                                    fontSize: 12,
+                                    color: colorForeground, // Pure binary theme implementation
+                                    fontSize: 11,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Inter',
                                   ),
                                 ),
-                                const SizedBox(width: 12),
+                                const SizedBox(height: 4),
                                 Text(
-                                  '[$entryDate]',
+                                  '$entryTime // $statusLabel',
                                   style: TextStyle(
-                                    color: colorForeground.withOpacity(0.5),
-                                    fontSize: 10,
+                                    color: item.isInterrupted
+                                        ? colorForeground
+                                        : colorForeground.withOpacity(0.5),
+                                    fontSize: 11,
                                     fontFamily: 'Inter',
+                                    letterSpacing: 0.5,
                                   ),
                                 ),
-                                if (item.isInterrupted) ...[
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '[INTERRUPTED]',
-                                    style: TextStyle(
-                                      color: const Color(0xFF5F0E0D),
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Inter',
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                ]
                               ],
                             ),
                             Row(
