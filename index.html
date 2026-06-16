@@ -86,6 +86,9 @@
             line-height: 1.5;
             overflow-x: hidden;
             transition: background-color 0.2s ease, color 0.2s ease;
+            padding-left: 24px;
+            padding-right: 24px;
+            box-sizing: border-box;
         }
 
         /* Fixed touching walls issue with generous percentages */
@@ -840,7 +843,6 @@
             
             <div class="nav-meta-controls">
                 <button class="btn-theme-toggle" onclick="toggleSystemTheme()">[THEME]</button>
-                <div class="system-time-ticker" id="clock-ticker-field">SYS // STATUS_OK</div>
             </div>
         </div>
     </header>
@@ -1004,51 +1006,54 @@
             </div>
 
             <div class="architecture-cards-grid">
-                <div class="pillar-card" onclick="switchEmulatorScreen(0)">
-                    <div class="pillar-card-head"><span>FILE_01</span><span>SPLASHSCREEN.DART</span></div>
-                    <div>
-                        <h3 class="pillar-card-title">Splash Verification</h3>
-                        <p class="pillar-card-desc">Keeps the initialization overlay active until background configuration registers verify the system as ready. This prevents layout shift and race conditions across slower device models.</p>
-                    </div>
-                </div>
-                <div class="pillar-card" onclick="switchEmulatorScreen(1)">
-                    <div class="pillar-card-head"><span>FILE_02</span><span>SLEEP.DART</span></div>
-                    <div>
-                        <h3 class="pillar-card-title">Circadian Tracker</h3>
-                        <p class="pillar-card-desc">Bypasses external clock signals. Processes timestamps locally using simple transactional queries to preserve biometric isolation.</p>
-                    </div>
-                </div>
-                <div class="pillar-card" onclick="switchEmulatorScreen(2)">
-                    <div class="pillar-card-head"><span>FILE_03</span><span>WATER.DART</span></div>
-                    <div>
-                        <h3 class="pillar-card-title">Fluid Consumption</h3>
-                        <p class="pillar-card-desc">Tracks dynamic hydration logs (+250ML, +500ML, +750ML) against fixed targets via an efficient riverpod controller, bypassing complex database queries.</p>
-                    </div>
-                </div>
-                <div class="pillar-card" onclick="switchEmulatorScreen(3)">
-                    <div class="pillar-card-head"><span>FILE_04</span><span>STEP.DART</span></div>
-                    <div>
-                        <h3 class="pillar-card-title">Heatmap Matrix</h3>
-                        <p class="pillar-card-desc">Maps hardware pedometer sensor streams directly to color-coded intensity indexes based on historical performance logs.</p>
-                    </div>
-                </div>
-                <div class="pillar-card" onclick="switchEmulatorScreen(4)">
-                    <div class="pillar-card-head"><span>FILE_05</span><span>MEDITATION.DART</span></div>
-                    <div>
-                        <h3 class="pillar-card-title">Focus Inversion Alarm</h3>
-                        <p class="pillar-card-desc">Features zero background popups. Uses high-contrast screen inversions to provide clear focus milestones without adding interface noise.</p>
-                    </div>
-                </div>
-                <div class="pillar-card" onclick="switchEmulatorScreen(5)">
-                    <div class="pillar-card-head"><span>FILE_06</span><span>SETTING.DART</span></div>
-                    <div>
-                        <h3 class="pillar-card-title">Purge Cascades</h3>
-                        <p class="pillar-card-desc">Provides direct developer access keys alongside file clear controls that erase database tables instantly without leaving disk traces.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
+    <div class="pillar-card" onclick="switchEmulatorScreen(0, true)">
+        <div class="pillar-card-head"><span>FILE_01</span><span>SPLASHSCREEN.DART</span></div>
+        <div>
+            <h3 class="pillar-card-title">Splash Verification</h3>
+            <p class="pillar-card-desc">Keeps the initialization overlay active until background configuration registers verify the system as ready. This prevents layout shift and race conditions across slower device models.</p>
+        </div>
+    </div>
+    
+    <div class="pillar-card" onclick="switchEmulatorScreen(1, true)">
+        <div class="pillar-card-head"><span>FILE_02</span><span>SLEEP.DART</span></div>
+        <div>
+            <h3 class="pillar-card-title">Circadian Tracker</h3>
+            <p class="pillar-card-desc">Bypasses external clock signals. Processes timestamps locally using simple transactional queries to preserve biometric isolation.</p>
+        </div>
+    </div>
+    
+    <div class="pillar-card" onclick="switchEmulatorScreen(2, true)">
+        <div class="pillar-card-head"><span>FILE_03</span><span>WATER.DART</span></div>
+        <div>
+            <h3 class="pillar-card-title">Fluid Consumption</h3>
+            <p class="pillar-card-desc">Tracks dynamic hydration logs (+250ML, +500ML, +750ML) against fixed targets via an efficient riverpod controller, bypassing complex database queries.</p>
+        </div>
+    </div>
+    
+    <div class="pillar-card" onclick="switchEmulatorScreen(3, true)">
+        <div class="pillar-card-head"><span>FILE_04</span><span>STEP.DART</span></div>
+        <div>
+            <h3 class="pillar-card-title">Heatmap Matrix</h3>
+            <p class="pillar-card-desc">Maps hardware pedometer sensor streams directly to color-coded intensity indexes based on historical performance logs.</p>
+        </div>
+    </div>
+    
+    <div class="pillar-card" onclick="switchEmulatorScreen(4, true)">
+        <div class="pillar-card-head"><span>FILE_05</span><span>MEDITATION.DART</span></div>
+        <div>
+            <h3 class="pillar-card-title">Focus Inversion Alarm</h3>
+            <p class="pillar-card-desc">Features zero background popups. Uses high-contrast screen inversions to provide clear focus milestones without adding interface noise.</p>
+        </div>
+    </div>
+    
+    <div class="pillar-card" onclick="switchEmulatorScreen(5, true)">
+        <div class="pillar-card-head"><span>FILE_06</span><span>SETTING.DART</span></div>
+        <div>
+            <h3 class="pillar-card-title">Purge Cascades</h3>
+            <p class="pillar-card-desc">Provides direct developer access keys alongside file clear controls that erase database tables instantly without leaving disk traces.</p>
+        </div>
+    </div>
+</div>
         <section id="manifesto" class="container-frame manifesto-section">
             <div class="manifesto-split-layout">
                 <div>
@@ -1317,16 +1322,6 @@ Widget build(BuildContext context) {
     </footer>
 
     <script>
-        /* --- CLOCK FIELD DATA HANDSHAKE --- */
-        function runSystemClockTicker() {
-            const tickerField = document.getElementById('clock-ticker-field');
-            const dateObj = new Date();
-            const timeString = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
-            tickerField.innerText = `SYS_CLOCK // ${timeString}`;
-        }
-        setInterval(runSystemClockTicker, 1000);
-        runSystemClockTicker();
-
         /* --- THEME TOGGLE LOGIC --- */
         function toggleSystemTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -1343,22 +1338,29 @@ Widget build(BuildContext context) {
         const dockButtons = document.querySelectorAll('.dock-node');
         const overviewPillarCards = document.querySelectorAll('.pillar-card');
 
-        function switchEmulatorScreen(targetIndex) {
-            routeIdList.forEach((id, idx) => {
-                const view = document.getElementById(id);
-                if (idx === targetIndex) {
-                    view.classList.add('active-screen');
-                    if (dockButtons[idx]) dockButtons[idx].classList.add('active-dock');
-                    if (overviewPillarCards[idx - 1]) overviewPillarCards[idx - 1].classList.add('active-pillar');
-                    document.getElementById('emu-current-route-title').innerText = routeHeaderLabels[idx];
-                } else {
-                    view.classList.remove('active-screen');
-                    if (dockButtons[idx]) dockButtons[idx].classList.remove('active-dock');
-                    if (overviewPillarCards[idx - 1]) overviewPillarCards[idx - 1].classList.remove('active-pillar');
-                }
-            });
-            if (targetIndex !== 4) resetEmuMeditationTimer();
+        function switchEmulatorScreen(targetIndex, isPillarClick = false) {
+    // Always clear out highlights from all pillar cards first
+    overviewPillarCards.forEach(card => card.classList.remove('active-pillar'));
+
+    routeIdList.forEach((id, idx) => {
+        const view = document.getElementById(id);
+        if (idx === targetIndex) {
+            view.classList.add('active-screen');
+            if (dockButtons[idx]) dockButtons[idx].classList.add('active-dock');
+            
+            // Only highlight the card if it was an explicit pillar click
+            if (isPillarClick && overviewPillarCards[idx]) {
+                overviewPillarCards[idx].classList.add('active-pillar');
+            }
+            
+            document.getElementById('emu-current-route-title').innerText = routeHeaderLabels[idx];
+        } else {
+            view.classList.remove('active-screen');
+            if (dockButtons[idx]) dockButtons[idx].classList.remove('active-dock');
         }
+    });
+    if (targetIndex !== 4) resetEmuMeditationTimer();
+}
 
         /* --- INTERACTIVE ETHOS MANIFESTO ACCORDION SYSTEMS --- */
         function togglePresentationAccordion(btnElement) {
