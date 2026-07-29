@@ -3,25 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:pedometer/pedometer.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../main.dart';
 
-// --- 1. STATE NOTIFIER WITH SECURE ANDROID HARDWARE PIECE ---
 class StepNotifier extends Notifier<Map<String, int>> {
   static const String _boxName = 'vidador_steps_box';
-  StreamSubscription<StepCount>? _pedometerSubscription;
 
-  // Track live initialization diagnostics securely
-  String hardwareDiagnosticStatus = "INITIALIZING SYSTEM...";
+  String hardwareDiagnosticStatus = "MANUAL LOGGING ACTIVE";
 
   @override
   Map<String, int> build() {
     _initAndLoad();
-    ref.onDispose(() {
-      _pedometerSubscription?.cancel();
-    });
     return {};
   }
 
@@ -30,86 +22,6 @@ class StepNotifier extends Notifier<Map<String, int>> {
     final Map<dynamic, dynamic> rawMap = box.get('records', defaultValue: {});
 
     state = rawMap.map((key, value) => MapEntry(key.toString(), value as int));
-
-    // Safely check permission permissions prior to activating physical motherboard channels
-    _verifyAndConnectHardware();
-  }
-
-  Future<void> _verifyAndConnectHardware() async {
-    var status = await Permission.activityRecognition.status;
-
-    // FIX: If permission is not already granted, explicitly request it from the user
-    if (!status.isGranted) {
-      status = await Permission.activityRecognition.request();
-    }
-
-    if (status.isGranted) {
-      _initAndroidPedometer();
-    } else if (status.isPermanentlyDenied) {
-      hardwareDiagnosticStatus = "PERMISSION PERMANENTLY DENIED. GO TO SETTINGS.";
-      state = Map<String, int>.from(state); // Forces Riverpod to rebuild and update the UI message
-      openAppSettings(); // Automatically opens phone settings so the user can fix it
-    } else {
-      hardwareDiagnosticStatus = "PRIVILEGE DENIED. CANNOT TRACK STEPS.";
-      state = Map<String, int>.from(state); // Forces Riverpod to rebuild and update the UI message
-    }
-  }
-
-  void _initAndroidPedometer() {
-    try {
-      _pedometerSubscription?.cancel();
-      _pedometerSubscription = Pedometer.stepCountStream.listen(
-        _onStepCountUpdate,
-        onError: (error) {
-          debugPrint("Pedometer Error: $error");
-          hardwareDiagnosticStatus = "HARDWARE CHIP SLEEPING OR DISCONNECTED";
-          state = Map<String, int>.from(state); // Forces Riverpod UI rebuild
-        },
-      );
-      hardwareDiagnosticStatus = "CONNECTED. WALK 10+ STEPS TO SYNC";
-      state = Map<String, int>.from(state); // Forces Riverpod UI rebuild
-    } catch (e) {
-      hardwareDiagnosticStatus = "CHANNEL FAILURE: $e";
-      state = Map<String, int>.from(state); // Forces Riverpod UI rebuild
-    }
-  }
-
-  Future<void> _onStepCountUpdate(StepCount event) async {
-    final box = Hive.box(_boxName);
-    final now = DateTime.now();
-    // FIXED: Removed the erroneous "- 1" to securely unify dates with the UI layers
-    final String todayKey = '${now.year}-${now.month}-${now.day}';
-
-    int systemSteps = event.steps;
-    int lastSystemSteps = box.get('last_system_steps', defaultValue: systemSteps);
-    String lastSavedDate = box.get('last_saved_date', defaultValue: todayKey);
-
-    hardwareDiagnosticStatus = "HARDWARE PIPELINE: ACTIVE";
-
-    if (lastSavedDate != todayKey) {
-      await box.put('last_saved_date', todayKey);
-      await box.put('last_system_steps', systemSteps);
-      lastSystemSteps = systemSteps;
-    }
-
-    int stepDifference = systemSteps - lastSystemSteps;
-
-    // Handle device boot lifecycle resets cleanly
-    if (stepDifference < 0) {
-      await box.put('last_system_steps', systemSteps);
-      stepDifference = 0;
-    }
-
-    if (stepDifference > 0) {
-      int currentStoredSteps = state[todayKey] ?? 0;
-      int updatedSteps = currentStoredSteps + stepDifference;
-
-      await box.put('last_system_steps', systemSteps);
-      await logSteps(todayKey, updatedSteps);
-    } else {
-      // Force UI refresh to reveal the "HARDWARE PIPELINE: ACTIVE" text change immediately
-      state = Map<String, int>.from(state);
-    }
   }
 
   Future<void> logSteps(String dateKey, int steps) async {
@@ -124,15 +36,10 @@ class StepNotifier extends Notifier<Map<String, int>> {
     final box = Hive.box(_boxName);
     await box.put('records', state);
   }
-
-  void kickstartSensorManual() {
-    _verifyAndConnectHardware();
-  }
 }
 
 final stepProvider = NotifierProvider<StepNotifier, Map<String, int>>(StepNotifier.new);
 
-// --- 2. UI SCREEN COMPONENT ---
 class StepScreen extends ConsumerStatefulWidget {
   const StepScreen({super.key});
 
@@ -147,15 +54,6 @@ class _StepScreenState extends ConsumerState<StepScreen> {
     'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
   ];
   static const List<String> _dayHeaders = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-
-  @override
-  void initState() {
-    super.initState();
-    // Force prompt permission checking immediately when clicking into this tab
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(stepProvider.notifier).kickstartSensorManual();
-    });
-  }
 
   List<int> _getDaysInMonths(int year) {
     bool isLeapYear = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
@@ -322,7 +220,6 @@ class _StepScreenState extends ConsumerState<StepScreen> {
     final now = DateTime.now();
     final currentYear = now.year;
 
-    // FIXED: Synchronized matching tracking key maps
     final String todayKey = '$currentYear-${now.month}-${now.day}';
     final int todaySteps = stepRecords[todayKey] ?? 0;
 
@@ -364,7 +261,6 @@ class _StepScreenState extends ConsumerState<StepScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // TOP HEADLINE ROW
             Padding(
               padding: const EdgeInsets.fromLTRB(20.0, 16.0, 20.0, 12.0),
               child: Row(
@@ -384,26 +280,22 @@ class _StepScreenState extends ConsumerState<StepScreen> {
 
             Divider(color: ruleBorder, height: 1, thickness: 0.8),
 
-            // VISUAL STEP INTENSITY & TELEMETRY PANEL
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
               child: Column(
                 children: [
-                  // Profile Performance Tier Block
-                  // Profile Performance Tier Block — CYBERPUNK BRUTALIST REBUILD
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: isDark ? const Color(0xFF050505) : const Color(0xFFFAFAFA),
                       border: Border.all(
                         color: textMain.withValues(alpha: 0.8),
-                        width: 1.2, // Sharper, heavier border lines
+                        width: 1.2,
                       ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // TOP VECTOR: DIAGNOSTICS
                         Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Column(
@@ -438,9 +330,7 @@ class _StepScreenState extends ConsumerState<StepScreen> {
                                   Text(
                                     "● ",
                                     style: GoogleFonts.robotoMono(
-                                      color: diagnostics.contains("ACTIVE") || diagnostics.contains("CONNECTED")
-                                          ? const Color(0xFF00FF66) // Neon Green when active/connected
-                                          : Colors.redAccent,
+                                      color: const Color(0xFF00FF66),
                                       fontSize: 9,
                                     ),
                                   ),
@@ -448,9 +338,7 @@ class _StepScreenState extends ConsumerState<StepScreen> {
                                     child: Text(
                                       diagnostics.toUpperCase(),
                                       style: GoogleFonts.robotoMono(
-                                        color: diagnostics.contains("ACTIVE") || diagnostics.contains("CONNECTED")
-                                            ? textMain
-                                            : Colors.redAccent,
+                                        color: textMain,
                                         fontSize: 8.5,
                                         fontWeight: FontWeight.bold,
                                         letterSpacing: 0.02,
@@ -463,14 +351,12 @@ class _StepScreenState extends ConsumerState<StepScreen> {
                           ),
                         ),
 
-                        // SOLID SEPARATOR SYSTEM RULE
                         Container(
                           height: 1.2,
                           width: double.infinity,
                           color: textMain.withValues(alpha: 0.8),
                         ),
 
-                        // BOTTOM VECTOR: KINETICS PROFILE
                         Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Column(
@@ -487,7 +373,7 @@ class _StepScreenState extends ConsumerState<StepScreen> {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                "// ${biologicalTier.toUpperCase()}",
+                                biologicalTier.toUpperCase(),
                                 style: GoogleFonts.robotoMono(
                                   color: textMain,
                                   fontSize: 10.5,
@@ -503,7 +389,6 @@ class _StepScreenState extends ConsumerState<StepScreen> {
                   ),
                   const SizedBox(height: 14),
 
-                  // Weekly Mini Telemetry Bar Chart
                   Row(
                     children: List.generate(7, (index) {
                       final int targetWeekday = index + 1;
@@ -560,7 +445,6 @@ class _StepScreenState extends ConsumerState<StepScreen> {
                   Divider(color: ruleBorder, height: 1, thickness: 0.5),
                   const SizedBox(height: 4),
 
-                  // Extended Telemetry Metric Compilation Rows
                   _buildStepMetricRow("TOTAL RECOUNT VOLUMETRICS", "$totalSteps STEPS", textMain, ruleBorder),
                   _buildStepMetricRow("MAXIMUM STEP PEAK (PR)", "$maxSteps STEPS", textMain, ruleBorder),
                   _buildStepMetricRow("COMPUTED SESSION MEAN", "${averageSteps.toInt()} STEPS / DAY", textMain, ruleBorder),
@@ -570,7 +454,6 @@ class _StepScreenState extends ConsumerState<StepScreen> {
 
             Divider(color: ruleBorder, height: 1, thickness: 0.8),
 
-            // CONDENSED CALENDAR REGION
             Expanded(
               child: ScrollConfiguration(
                 behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
@@ -686,7 +569,6 @@ class _StepScreenState extends ConsumerState<StepScreen> {
 
             Divider(color: ruleBorder, height: 1, thickness: 0.8),
 
-            // HARMONIZED PROGRESS LEGEND
             Padding(
               padding: const EdgeInsets.fromLTRB(20.0, 14.0, 20.0, 16.0),
               child: SingleChildScrollView(
