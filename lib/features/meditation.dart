@@ -5,7 +5,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import '../main.dart';
 
-// --- 1. DATA MODEL ---
 class MeditationEntry {
   final String id;
   final int durationMinutes;
@@ -20,18 +19,18 @@ class MeditationEntry {
   });
 
   Map<String, dynamic> toMap() => {
-    'id': id,
-    'durationMinutes': durationMinutes,
-    'timestamp': timestamp.toIso8601String(),
-    'isInterrupted': isInterrupted,
-  };
+        'id': id,
+        'durationMinutes': durationMinutes,
+        'timestamp': timestamp.toIso8601String(),
+        'isInterrupted': isInterrupted,
+      };
 
   factory MeditationEntry.fromMap(Map<String, dynamic> map) => MeditationEntry(
-    id: map['id'] ?? '',
-    durationMinutes: map['durationMinutes'] ?? 0,
-    timestamp: DateTime.parse(map['timestamp']),
-    isInterrupted: map['isInterrupted'] ?? false,
-  );
+        id: map['id'] ?? '',
+        durationMinutes: map['durationMinutes'] ?? 0,
+        timestamp: DateTime.parse(map['timestamp']),
+        isInterrupted: map['isInterrupted'] ?? false,
+      );
 }
 
 // --- 2. DATA MODEL STATE ---
@@ -67,7 +66,6 @@ class TimerState {
   }
 }
 
-// --- 3. STATE NOTIFIER ENGINE ---
 class MeditationTimerNotifier extends Notifier<TimerState> {
   static const String _boxName = 'vidador_meditation_box';
   Timer? _ticker;
@@ -87,12 +85,15 @@ class MeditationTimerNotifier extends Notifier<TimerState> {
 
   Future<void> _initAndLoad() async {
     try {
-      final box = Hive.isBoxOpen(_boxName) ? Hive.box(_boxName) : await Hive.openBox(_boxName);
+      final box = Hive.isBoxOpen(_boxName)
+          ? Hive.box(_boxName)
+          : await Hive.openBox(_boxName);
       final List<dynamic>? storedRaw = box.get('entries');
 
       if (storedRaw != null && storedRaw.isNotEmpty) {
         final loadedHistory = storedRaw
-            .map((item) => MeditationEntry.fromMap(Map<String, dynamic>.from(item as Map)))
+            .map((item) =>
+                MeditationEntry.fromMap(Map<String, dynamic>.from(item as Map)))
             .toList();
         state = state.copyWith(history: loadedHistory);
       }
@@ -182,14 +183,17 @@ class MeditationTimerNotifier extends Notifier<TimerState> {
   }
 
   Future<void> deleteLog(String id) async {
-    final updatedHistory = state.history.where((entry) => entry.id != id).toList();
+    final updatedHistory =
+        state.history.where((entry) => entry.id != id).toList();
     state = state.copyWith(history: updatedHistory);
     await _saveToDisk();
   }
 
   Future<void> _saveToDisk() async {
     try {
-      final box = Hive.isBoxOpen(_boxName) ? Hive.box(_boxName) : await Hive.openBox(_boxName);
+      final box = Hive.isBoxOpen(_boxName)
+          ? Hive.box(_boxName)
+          : await Hive.openBox(_boxName);
       await box.put('entries', state.history.map((e) => e.toMap()).toList());
     } catch (e) {
       debugPrint("Meditation Save Error: $e");
@@ -198,9 +202,9 @@ class MeditationTimerNotifier extends Notifier<TimerState> {
 }
 
 final meditationTimerProvider =
-NotifierProvider<MeditationTimerNotifier, TimerState>(MeditationTimerNotifier.new);
+    NotifierProvider<MeditationTimerNotifier, TimerState>(
+        MeditationTimerNotifier.new);
 
-// --- 4. UI SCREEN COMPONENT ---
 class MeditationScreen extends ConsumerStatefulWidget {
   const MeditationScreen({super.key});
 
@@ -216,17 +220,23 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
     final timerNotifier = ref.read(meditationTimerProvider.notifier);
 
     Color bgMain = isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF);
-    Color colorForeground = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
+    Color colorForeground =
+        isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
     Color containerBg = Colors.transparent;
-    Color buttonOperatorBg = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
-    Color buttonOperatorText = isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF);
+    Color buttonOperatorBg =
+        isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
+    Color buttonOperatorText =
+        isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF);
 
     if (timerState.isFinished) {
       bgMain = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
-      colorForeground = isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF);
+      colorForeground =
+          isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF);
       containerBg = Colors.transparent;
-      buttonOperatorBg = isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF);
-      buttonOperatorText = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
+      buttonOperatorBg =
+          isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF);
+      buttonOperatorText =
+          isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
     }
 
     final int totalSeconds = timerState.remainingSeconds;
@@ -246,7 +256,6 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // HEADER ROW ARCHITECTURE
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -260,14 +269,13 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
                       letterSpacing: 1.0,
                     ),
                   ),
-                  Icon(Icons.hourglass_empty_outlined, color: colorForeground, size: 16),
+                  Icon(Icons.hourglass_empty_outlined,
+                      color: colorForeground, size: 16),
                 ],
               ),
               const SizedBox(height: 32),
               Container(height: 0.8, color: colorForeground),
               const SizedBox(height: 24),
-
-              // CLEAN LOW-PROFILE TIMER CARD
               Container(
                 width: double.infinity,
                 height: 80,
@@ -288,8 +296,6 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-
-              // CUMULATIVE TIME ADDERS
               Row(
                 children: [
                   _buildDurationAdderButton(timerNotifier, 15, colorForeground),
@@ -299,9 +305,7 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
                   _buildDurationAdderButton(timerNotifier, 60, colorForeground),
                 ],
               ),
-
               const SizedBox(height: 36),
-
               Text(
                 'EXECUTION ENGINE OPERATORS',
                 style: TextStyle(
@@ -313,13 +317,13 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // BINARY OPERATOR ACTIONS
               Row(
                 children: [
                   Expanded(
                     child: InkWell(
-                      onTap: timerState.isRunning ? timerNotifier.pauseTimer : timerNotifier.startTimer,
+                      onTap: timerState.isRunning
+                          ? timerNotifier.pauseTimer
+                          : timerNotifier.startTimer,
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(
@@ -331,7 +335,9 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          timerState.isRunning ? '[ PAUSE INTERRUPT ]' : '[ INITIALIZE START ]',
+                          timerState.isRunning
+                              ? '[ PAUSE INTERRUPT ]'
+                              : '[ INITIALIZE START ]',
                           style: TextStyle(
                             color: buttonOperatorText,
                             fontSize: 11,
@@ -347,7 +353,8 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
                   InkWell(
                     onTap: timerNotifier.resetTimer,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 14, horizontal: 24),
                       decoration: BoxDecoration(
                         color: Colors.transparent,
                         border: Border.all(
@@ -370,9 +377,7 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 36),
-
               Text(
                 'CHRONOLOGICAL HISTORY METRICS',
                 style: TextStyle(
@@ -384,99 +389,105 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // PERSISTENT HISTORY LIST ENGINE (MIRRORED EXACTLY FROM SLEEP.DART)
               Expanded(
                 child: timerState.history.isEmpty
                     ? Center(
-                  child: Text(
-                    'NO MEDITATION SESSIONS RECORDED',
-                    style: TextStyle(
-                      color: colorForeground,
-                      fontSize: 10,
-                      fontFamily: 'Inter',
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                )
+                        child: Text(
+                          'NO MEDITATION SESSIONS RECORDED',
+                          style: TextStyle(
+                            color: colorForeground,
+                            fontSize: 10,
+                            fontFamily: 'Inter',
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      )
                     : ListView.builder(
-                  physics: const ClampingScrollPhysics(),
-                  itemCount: timerState.history.length,
-                  itemBuilder: (context, index) {
-                    final item = timerState.history[index];
-                    final String entryTime = DateFormat('HH:mm').format(item.timestamp);
-                    final String calendarDate = DateFormat('MMM dd').format(item.timestamp).toUpperCase();
-                    final String statusLabel = item.isInterrupted ? 'INTERRUPTED' : 'COMPLETED';
+                        physics: const ClampingScrollPhysics(),
+                        itemCount: timerState.history.length,
+                        itemBuilder: (context, index) {
+                          final item = timerState.history[index];
+                          final String entryTime =
+                              DateFormat('HH:mm').format(item.timestamp);
+                          final String calendarDate = DateFormat('MMM dd')
+                              .format(item.timestamp)
+                              .toUpperCase();
+                          final String statusLabel =
+                              item.isInterrupted ? 'INTERRUPTED' : 'COMPLETED';
+                          final Color currentBorderColor =
+                              item.isInterrupted ? Colors.red : colorForeground;
 
-                    // Clean vibrant red boundary mutation for interruptions
-                    final Color currentBorderColor = item.isInterrupted
-                        ? Colors.red
-                        : colorForeground;
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          border: Border.all(color: currentBorderColor, width: 0.8),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '[$calendarDate]',
-                                  style: TextStyle(
-                                    color: colorForeground, // Pure binary theme implementation
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Inter',
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 14, horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                border: Border.all(
+                                    color: currentBorderColor, width: 0.8),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '[$calendarDate]',
+                                        style: TextStyle(
+                                          color: colorForeground,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Inter',
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '$entryTime // $statusLabel',
+                                        style: TextStyle(
+                                          color: item.isInterrupted
+                                              ? colorForeground
+                                              : colorForeground
+                                                  .withOpacity(0.5),
+                                          fontSize: 11,
+                                          fontFamily: 'Inter',
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '$entryTime // $statusLabel',
-                                  style: TextStyle(
-                                    color: item.isInterrupted
-                                        ? colorForeground
-                                        : colorForeground.withOpacity(0.5),
-                                    fontSize: 11,
-                                    fontFamily: 'Inter',
-                                    letterSpacing: 0.5,
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '${item.durationMinutes} MIN',
+                                        style: TextStyle(
+                                          color: colorForeground,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Inter',
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      InkWell(
+                                        onTap: () =>
+                                            timerNotifier.deleteLog(item.id),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Icon(Icons.close,
+                                              color: colorForeground, size: 14),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                            Row(
-                              children: [
-                                Text(
-                                  '${item.durationMinutes} MIN',
-                                  style: TextStyle(
-                                    color: colorForeground,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Inter',
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                InkWell(
-                                  onTap: () => timerNotifier.deleteLog(item.id),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Icon(Icons.close, color: colorForeground, size: 14),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ],
           ),
@@ -486,10 +497,10 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
   }
 
   Widget _buildDurationAdderButton(
-      MeditationTimerNotifier notifier,
-      int mins,
-      Color colorForeground,
-      ) {
+    MeditationTimerNotifier notifier,
+    int mins,
+    Color colorForeground,
+  ) {
     return Expanded(
       child: InkWell(
         onTap: () => notifier.addDuration(mins),
