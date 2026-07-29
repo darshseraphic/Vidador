@@ -8,7 +8,8 @@ class AnimatedSplashScreen extends ConsumerStatefulWidget {
   const AnimatedSplashScreen({super.key, required this.child});
 
   @override
-  ConsumerState<AnimatedSplashScreen> createState() => _AnimatedSplashScreenState();
+  ConsumerState<AnimatedSplashScreen> createState() =>
+      _AnimatedSplashScreenState();
 }
 
 class _AnimatedSplashScreenState extends ConsumerState<AnimatedSplashScreen>
@@ -45,7 +46,6 @@ class _AnimatedSplashScreenState extends ConsumerState<AnimatedSplashScreen>
       ),
     ]).animate(_animationController);
 
-    // 1. Trigger the visual animation timer
     _animationController.forward().then((_) {
       if (mounted) {
         setState(() {
@@ -54,13 +54,11 @@ class _AnimatedSplashScreenState extends ConsumerState<AnimatedSplashScreen>
       }
     });
 
-    // 2. Trigger your async data loading in the background
     _loadBackgroundData();
   }
 
   Future<void> _loadBackgroundData() async {
     try {
-      // Simulating a minor data fetch sequence to guarantee background sync:
       await Future.delayed(const Duration(milliseconds: 500));
     } catch (e) {
       debugPrint("Error loading background data: $e");
@@ -81,8 +79,6 @@ class _AnimatedSplashScreenState extends ConsumerState<AnimatedSplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    // CRITICAL FIX: The splash screen only disappears when the animation
-    // is fully finished AND the background database data is verified as loaded.
     if (_isAnimationDone && _isDataLoaded) {
       return widget.child;
     }
