@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:permission_handler/permission_handler.dart'; // Handles the native OS popups
-import 'package:google_fonts/google_fonts.dart'; // <-- ACCESSIBILITY KEY FOR NAVIGATION TYPOGRAPHY
+import 'package:permission_handler/permission_handler.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'core/database.dart';
 import 'features/sleep.dart';
 import 'features/water.dart';
@@ -11,7 +11,6 @@ import 'features/meditation.dart';
 import 'features/setting.dart';
 import 'features/splashscreen.dart';
 
-// --- GLOBAL BINARY SPECTRUM SPECIFICATION ---
 final themeProvider = StateProvider<bool>((ref) {
   final box = Hive.box('vidador_settings_box');
   return box.get('is_dark_mode', defaultValue: true);
@@ -19,8 +18,6 @@ final themeProvider = StateProvider<bool>((ref) {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Enforce secure asynchronous file-system allocation hooks
   await LocalDatabaseManager.initializeDatabase();
 
   runApp(
@@ -129,7 +126,8 @@ class _MainLayoutRouterState extends ConsumerState<MainLayoutRouter> {
     );
   }
 
-  Widget _buildChronoTabItem(int index, String uppercaseLabel, Color selectedColor, Color unselectedColor) {
+  Widget _buildChronoTabItem(int index, String uppercaseLabel,
+      Color selectedColor, Color unselectedColor) {
     final bool isCurrent = _currentMatrixIndex == index;
 
     return Expanded(
@@ -141,10 +139,9 @@ class _MainLayoutRouterState extends ConsumerState<MainLayoutRouter> {
           alignment: Alignment.center,
           child: Text(
             isCurrent ? '[$uppercaseLabel]' : uppercaseLabel,
-            // FIXED: Replaced default system inheritance with clear Inter geometric font styles
             style: GoogleFonts.inter(
               color: isCurrent ? selectedColor : unselectedColor,
-              fontSize: 9.0, // Tweak slightly to optimize Inter proportional tracking
+              fontSize: 9.0,
               fontWeight: isCurrent ? FontWeight.bold : FontWeight.w600,
               letterSpacing: 0.05,
             ),
