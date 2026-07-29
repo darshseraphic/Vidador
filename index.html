@@ -27,10 +27,7 @@
 </body>
 </html>
     <style>
-        /* Your existing CSS styling goes here... */
-        /* --- STRICTOR BRUTALIST TOKENS (LIGHT DEFAULT / DARK TOGGLE) --- */
         :root {
-            /* LIGHT THEME (DEFAULT) */
             --bg-pure: #ffffff;
             --bg-surface: #f9f9f9;
             --bg-alt: #eeeeee;
@@ -38,20 +35,14 @@
             --text-muted: #555555;
             --text-dim: #888888;
             --shadow-color: #cccccc;
-            
-            /* Official App Dark Red Accents from Source Files */
             --accent-crimson: #94090D;
             --accent-darkred: #5F0E0D;
-            
-            /* Structural Brutalist Borders */
             --stroke-color: #000000;
             --stroke-color-dim: #aaaaaa;
-
             --stroke-thick: 2px solid var(--stroke-color);
             --stroke-thin: 1px solid var(--stroke-color);
             --stroke-dim: 1px solid var(--stroke-color-dim);
             --stroke-red: 1px solid var(--accent-crimson);
-            
             --font-sans: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
@@ -64,18 +55,15 @@
             --text-muted: #a3a3a3;
             --text-dim: #555555;
             --shadow-color: #111111;
-            
             --stroke-color: #ffffff;
             --stroke-color-dim: #555555;
         }
-
-        /* --- STRUCTURE RESET & GLOBAL CONFIG --- */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: var(--font-mono);
-            border-radius: 0px !important; /* Strict brutalist geometry */
+            border-radius: 0px !important;
             outline: none;
         }
 
@@ -90,15 +78,11 @@
             padding-right: 24px;
             box-sizing: border-box;
         }
-
-        /* Fixed touching walls issue with generous percentages */
         .container-frame {
             max-width: 1300px;
             margin: 0 auto;
             padding: 0 5%;
         }
-
-        /* --- STICKY STRUCTURAL NAV BAR --- */
         header {
             position: sticky;
             top: 0;
@@ -113,12 +97,10 @@
             justify-content: space-between;
             align-items: center;
             height: 70px;
-            
-            /* --- CONTROLS WALL SPACING FOR THE NAVIGATION ONLY --- */
             width: 100%;
-            max-width: 1400px;     /* Allows the navbar to stretch wider than the text below */
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 2%;         /* Decrease this percentage or pixel value to move elements closer to the walls */
+            padding: 0 2%;
         }
 
         .brand-core {
@@ -180,7 +162,6 @@
             color: var(--bg-pure);
         }
 
-        /* --- HERO SPLIT WITH STRUCTURAL GRIDS --- */
         .hero-section {
             display: grid;
             grid-template-columns: 1.1fr 1fr;
@@ -256,7 +237,6 @@
             background: var(--bg-alt);
         }
 
-        /* --- PHONE EMULATOR CONTAINER & CHASSIS --- */
         .emulator-panel-wrapper {
             padding: 40px;
             display: flex;
@@ -311,7 +291,6 @@
             display: flex;
         }
 
-        /* --- DYNAMIC EMULATOR SCREENS MODULES --- */
         .emu-card {
             border: var(--stroke-thin);
             background: var(--bg-pure);
@@ -339,8 +318,6 @@
             color: #ffffff;
             border-color: var(--accent-crimson);
         }
-
-        /* Splash View */
         #screen-splash {
             justify-content: center;
             align-items: center;
@@ -354,7 +331,6 @@
             font-family: var(--font-sans);
         }
 
-        /* Sleep State View */
         .sleep-status-row {
             display: flex;
             align-items: center;
@@ -367,7 +343,6 @@
             border: 1px solid var(--text-pure);
         }
 
-        /* Fluid Consumption View */
         .fluid-progress-track {
             height: 14px;
             border: var(--stroke-thin);
@@ -400,7 +375,6 @@
             color: var(--bg-pure);
         }
 
-        /* Spatiotemporal Grid Heatmap VIEW */
         .step-heatmap-layout {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -418,7 +392,6 @@
         .step-heatmap-node.tier3 { background: #e01116; }
         .step-heatmap-node.tier4 { background: var(--text-pure); }
 
-        /* Focus Inversion Timer view */
         .meditation-timer-display-box {
             border: var(--stroke-thin);
             padding: 30px 10px;
@@ -454,7 +427,6 @@
             border-color: var(--accent-darkred);
         }
 
-        /* Settings Schema View */
         .settings-row-node {
             display: flex;
             justify-content: space-between;
@@ -482,7 +454,6 @@
             color: var(--text-pure);
         }
 
-        /* Ledger Tables */
         .internal-ledger-table {
             width: 100%;
             margin-top: 14px;
@@ -496,7 +467,6 @@
             font-size: 11px;
         }
 
-        /* HARDWARE SWITCHER DOCK */
         .hardware-dock-scroller {
             width: 100%;
             max-width: 350px;
@@ -521,7 +491,6 @@
             border-color: var(--accent-crimson);
         }
 
-        /* --- SECTION 02: MATRIX ARCHITECTURE --- */
         .specs-section {
             padding: 80px 0;
             border-bottom: var(--stroke-thick);
@@ -596,7 +565,6 @@
             line-height: 1.5;
         }
 
-        /* --- SECTION 03: MANIFESTO CORE ETHOS --- */
         .manifesto-section {
             padding: 80px 0;
             border-bottom: var(--stroke-thick);
@@ -654,7 +622,6 @@
             background: var(--bg-surface);
         }
 
-        /* --- SECTION 04: CODE LAB SOURCE IDE --- */
         .workspace-section {
             padding: 80px 0;
             border-bottom: var(--stroke-thick);
@@ -710,7 +677,6 @@
             display: block;
         }
 
-        /* --- INDUSTRIAL REGISTRY DATA SCHEMA INDEX --- */
         .registry-section {
             padding: 80px 0;
             border-bottom: var(--stroke-thick);
@@ -752,7 +718,6 @@
             color: var(--text-muted);
         }
 
-        /* --- STARK BRUTALIST PRODUCTION FOOTER --- */
         footer {
             padding: 60px 0 30px 0;
             background: var(--bg-pure);
@@ -800,7 +765,6 @@
             color: var(--text-dim);
         }
 
-        /* --- RESOURCES GRID (ADDED) --- */
         .resources-grid {
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
@@ -808,7 +772,6 @@
             margin-top: 30px;
         }
 
-        /* --- PHONE & MOBILE ADAPTABILITY EMULATOR RULES --- */
         @media (max-width: 1100px) {
             .hero-section { grid-template-columns: 1fr; }
             .hero-text-container { padding: 40px 0; border-right: none; border-bottom: var(--stroke-thick); }
@@ -1322,7 +1285,7 @@ Widget build(BuildContext context) {
     </footer>
 
     <script>
-        /* --- THEME TOGGLE LOGIC --- */
+
         function toggleSystemTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             if (currentTheme === 'dark') {
@@ -1332,14 +1295,12 @@ Widget build(BuildContext context) {
             }
         }
 
-        /* --- EMULATOR SCREEN DASHBOARD CORE ROUTER --- */
         const routeIdList = ["screen-splash", "screen-sleep", "screen-water", "screen-steps", "screen-meditate", "screen-settings"];
         const routeHeaderLabels = ["BOOT ROUTINE", "ASYNCHRONOUS SLEEP TRACE", "HYDRO MATRIX ACCUMULATOR", "SPATIOTEMPORAL PEDOMETER MATRIX", "MINDFULNESS FOCUS TIMEOUT", "HARDWARE PURGE MATRIX"];
         const dockButtons = document.querySelectorAll('.dock-node');
         const overviewPillarCards = document.querySelectorAll('.pillar-card');
 
         function switchEmulatorScreen(targetIndex, isPillarClick = false) {
-    // Always clear out highlights from all pillar cards first
     overviewPillarCards.forEach(card => card.classList.remove('active-pillar'));
 
     routeIdList.forEach((id, idx) => {
@@ -1347,8 +1308,7 @@ Widget build(BuildContext context) {
         if (idx === targetIndex) {
             view.classList.add('active-screen');
             if (dockButtons[idx]) dockButtons[idx].classList.add('active-dock');
-            
-            // Only highlight the card if it was an explicit pillar click
+        
             if (isPillarClick && overviewPillarCards[idx]) {
                 overviewPillarCards[idx].classList.add('active-pillar');
             }
@@ -1362,7 +1322,6 @@ Widget build(BuildContext context) {
     if (targetIndex !== 4) resetEmuMeditationTimer();
 }
 
-        /* --- INTERACTIVE ETHOS MANIFESTO ACCORDION SYSTEMS --- */
         function togglePresentationAccordion(btnElement) {
             const targetPanel = btnElement.nextElementSibling;
             const marker = btnElement.querySelector('span:last-child');
@@ -1375,7 +1334,6 @@ Widget build(BuildContext context) {
             }
         }
 
-        /* --- REPOSITORY COMPONENT IDE TAB SWITCHER --- */
         const sourceBlocks = document.querySelectorAll('.code-snippet-layer');
         const sidebarTabs = document.querySelectorAll('.ide-tab-node');
 
@@ -1386,9 +1344,6 @@ Widget build(BuildContext context) {
             sourceBlocks[index].classList.add('active-code');
         }
 
-        /* --- PHYSICAL HARDWARE STATE REPLICATORS --- */
-
-        // 1. Sleep Telemetry Stream Mutator
         let isSleepActiveState = false;
         function runEmuSleepMutation() {
             const label = document.getElementById('emu-sleep-status-label');
@@ -1414,7 +1369,6 @@ Widget build(BuildContext context) {
             }
         }
 
-        // 2. Hydration Volume Accumulator Pipeline
         let currentFluidLoggedAccumulator = 750;
         function addEmuFluidVolume(mlVolume) {
             currentFluidLoggedAccumulator = Math.min(3000, currentFluidLoggedAccumulator + mlVolume);
@@ -1429,7 +1383,6 @@ Widget build(BuildContext context) {
             historyTable.insertBefore(trNode, historyTable.firstChild);
         }
 
-        // 3. Spatiotemporal Pedometer Matrix Grid Constructor
         const gridCanvasElement = document.getElementById('emu-step-heatmap-canvas');
         for (let idx = 1; idx <= 28; idx++) {
             const node = document.createElement('div');
@@ -1450,7 +1403,6 @@ Widget build(BuildContext context) {
             gridCanvasElement.appendChild(node);
         }
 
-        // 4. Mindfulness Timing Core Inversion Ticker
         let internalTimerEngineInstance = null;
         function startEmuMeditationTimer() {
             resetEmuMeditationTimer();
@@ -1485,7 +1437,6 @@ Widget build(BuildContext context) {
             document.getElementById('emu-meditate-run-btn').disabled = false;
         }
 
-        // 5. Secure Configuration Purge & State Toggles
         function toggleEmuConfigSwitch(rowElement) {
             const toggleDot = rowElement.querySelector('.settings-toggle-box');
             toggleDot.classList.toggle('toggle-on');
@@ -1500,7 +1451,7 @@ Widget build(BuildContext context) {
             document.getElementById('emu-water-history-table').innerHTML = "";
         }
 
-        // Automatically drop out of initialization boot screen layout 
+ 
         setTimeout(() => { switchEmulatorScreen(1); }, 1800);
     </script>
 </body>
