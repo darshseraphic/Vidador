@@ -4,7 +4,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import '../main.dart';
 
-// --- 1. DATA MODEL ---
 class WaterEntry {
   final String id;
   final int amountMl;
@@ -17,19 +16,18 @@ class WaterEntry {
   });
 
   Map<String, dynamic> toMap() => {
-    'id': id,
-    'amountMl': amountMl,
-    'timestamp': timestamp.toIso8601String(),
-  };
+        'id': id,
+        'amountMl': amountMl,
+        'timestamp': timestamp.toIso8601String(),
+      };
 
   factory WaterEntry.fromMap(Map<String, dynamic> map) => WaterEntry(
-    id: map['id'] ?? '',
-    amountMl: map['amountMl'] ?? 0,
-    timestamp: DateTime.parse(map['timestamp']),
-  );
+        id: map['id'] ?? '',
+        amountMl: map['amountMl'] ?? 0,
+        timestamp: DateTime.parse(map['timestamp']),
+      );
 }
 
-// --- 2. STATE NOTIFIER ---
 class WaterNotifier extends Notifier<List<WaterEntry>> {
   static const String _boxName = 'vidador_water_box';
   static const int dailyTargetMl = 3000;
@@ -72,7 +70,10 @@ class WaterNotifier extends Notifier<List<WaterEntry>> {
   int getTodayTotal() {
     final now = DateTime.now();
     return state
-        .where((e) => e.timestamp.year == now.year && e.timestamp.month == now.month && e.timestamp.day == now.day)
+        .where((e) =>
+            e.timestamp.year == now.year &&
+            e.timestamp.month == now.month &&
+            e.timestamp.day == now.day)
         .fold(0, (sum, item) => sum + item.amountMl);
   }
 
@@ -82,9 +83,9 @@ class WaterNotifier extends Notifier<List<WaterEntry>> {
   }
 }
 
-final waterProvider = NotifierProvider<WaterNotifier, List<WaterEntry>>(WaterNotifier.new);
+final waterProvider =
+    NotifierProvider<WaterNotifier, List<WaterEntry>>(WaterNotifier.new);
 
-// --- 3. UI SCREEN ---
 class WaterScreen extends ConsumerWidget {
   const WaterScreen({super.key});
 
@@ -94,12 +95,13 @@ class WaterScreen extends ConsumerWidget {
     final entries = ref.watch(waterProvider);
     final notifier = ref.read(waterProvider.notifier);
 
-    // Absolute Binary Styling System (Strictly Zero Gray Tones)
     final bgMain = isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF);
-    final colorForeground = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
+    final colorForeground =
+        isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
 
     final int todayTotal = notifier.getTodayTotal();
-    final double completionRatio = (todayTotal / WaterNotifier.dailyTargetMl).clamp(0.0, 1.0);
+    final double completionRatio =
+        (todayTotal / WaterNotifier.dailyTargetMl).clamp(0.0, 1.0);
 
     return Scaffold(
       backgroundColor: bgMain,
@@ -109,7 +111,6 @@ class WaterScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // HEADER ROW ARCHITECTURE
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -123,14 +124,13 @@ class WaterScreen extends ConsumerWidget {
                       letterSpacing: 1.0,
                     ),
                   ),
-                  Icon(Icons.water_drop_outlined, color: colorForeground, size: 16),
+                  Icon(Icons.water_drop_outlined,
+                      color: colorForeground, size: 16),
                 ],
               ),
               const SizedBox(height: 32),
               Container(height: 0.8, color: colorForeground),
               const SizedBox(height: 24),
-
-              // QUANTITATIVE MONITOR DASHBOARD CARD
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -179,8 +179,6 @@ class WaterScreen extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 24),
-
-                    // STRICT BINARY PROGRESS TRACKER BAR
                     Container(
                       width: double.infinity,
                       height: 8,
@@ -202,8 +200,6 @@ class WaterScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // PRE-SET VOLUMETRIC CONTROL MATRICES
               Row(
                 children: [
                   _buildQuickLogButton(ref, 250, colorForeground),
@@ -213,9 +209,7 @@ class WaterScreen extends ConsumerWidget {
                   _buildQuickLogButton(ref, 750, colorForeground),
                 ],
               ),
-
               const SizedBox(height: 36),
-
               Text(
                 'CHRONOLOGICAL HISTORY METRICS',
                 style: TextStyle(
@@ -227,89 +221,96 @@ class WaterScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // WATER ITERATOR INPUT FEED
               Expanded(
                 child: entries.isEmpty
                     ? Center(
-                  child: Text(
-                    'NO FLUID INTAKE RECORDED',
-                    style: TextStyle(
-                      color: colorForeground,
-                      fontSize: 10,
-                      fontFamily: 'Inter',
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                )
+                        child: Text(
+                          'NO FLUID INTAKE RECORDED',
+                          style: TextStyle(
+                            color: colorForeground,
+                            fontSize: 10,
+                            fontFamily: 'Inter',
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      )
                     : ListView.builder(
-                  physics: const ClampingScrollPhysics(),
-                  itemCount: entries.length,
-                  itemBuilder: (context, index) {
-                    final item = entries[index];
-                    final String entryTime = DateFormat('HH:mm').format(item.timestamp);
-                    final String entryDate = DateFormat('MMM dd').format(item.timestamp).toUpperCase();
+                        physics: const ClampingScrollPhysics(),
+                        itemCount: entries.length,
+                        itemBuilder: (context, index) {
+                          final item = entries[index];
+                          final String entryTime =
+                              DateFormat('HH:mm').format(item.timestamp);
+                          final String entryDate = DateFormat('MMM dd')
+                              .format(item.timestamp)
+                              .toUpperCase();
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          border: Border.all(color: colorForeground, width: 0.8),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  entryTime,
-                                  style: TextStyle(
-                                    color: colorForeground,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Inter',
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 14, horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                border: Border.all(
+                                    color: colorForeground, width: 0.8),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        entryTime,
+                                        style: TextStyle(
+                                          color: colorForeground,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Inter',
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        '[$entryDate]',
+                                        style: TextStyle(
+                                          color: colorForeground,
+                                          fontSize: 10,
+                                          fontFamily: 'Inter',
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  '[$entryDate]',
-                                  style: TextStyle(
-                                    color: colorForeground,
-                                    fontSize: 10,
-                                    fontFamily: 'Inter',
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '+${item.amountMl} ML',
+                                        style: TextStyle(
+                                          color: colorForeground,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Inter',
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      InkWell(
+                                        onTap: () => ref
+                                            .read(waterProvider.notifier)
+                                            .deleteLog(item.id),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Icon(Icons.close,
+                                              color: colorForeground, size: 14),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                            Row(
-                              children: [
-                                Text(
-                                  '+${item.amountMl} ML',
-                                  style: TextStyle(
-                                    color: colorForeground,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Inter',
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                InkWell(
-                                  onTap: () => ref.read(waterProvider.notifier).deleteLog(item.id),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Icon(Icons.close, color: colorForeground, size: 14),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ],
           ),
