@@ -21,3 +21,4 @@
 *.zip binary
 android/build/
 android/.gradle/
+/index.html linguist-vendored

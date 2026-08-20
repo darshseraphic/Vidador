@@ -32,3 +32,7 @@ ios/
 windows/
 linux/
 macos/
+android/build/
+android/.gradle/
+.dart_tool/
+build/
