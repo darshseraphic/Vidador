@@ -27,3 +27,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+windows/
+linux/
+macos/ios/
+windows/
+linux/
+macos/
