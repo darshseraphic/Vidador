@@ -14,7 +14,7 @@ dependencies:
   intl: ^0.19.0
   url_launcher: ^6.3.1
   google_fonts: ^8.1.0
-  permission_handler: ^12.0.3 # <-- EXPLICIT SYSTEM PERMISSION ACCESS PIECE
+  permission_handler: ^12.0.3 
 
 dev_dependencies:
   flutter_test:
@@ -25,18 +25,13 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-# EXPLICIT TOP-LEVEL AUTOMATION METRICS
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: false
   image_path: "assets/logo.png"
   remove_alpha_ios: true
-
-# ULTRA-MINIMAL PLAIN BLACK NATIVE SPLASH ENGINE
 flutter_native_splash:
   color: "#000000"
   fullscreen: true
-  # Removing the 'image' property completely ensures a completely plain dark canvas
   android_12:
     color: "#000000"

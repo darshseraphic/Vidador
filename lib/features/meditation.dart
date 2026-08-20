@@ -33,7 +33,6 @@ class MeditationEntry {
       );
 }
 
-// --- 2. DATA MODEL STATE ---
 class TimerState {
   final int remainingSeconds;
   final int initialSeconds;
