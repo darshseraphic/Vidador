@@ -328,11 +328,38 @@
       .release-actions small { flex-basis: 100%; text-align: right; margin-top: 8px; font-size: 11px; font-weight: 700; color: var(--subtle); letter-spacing: 0.1em; text-transform: uppercase; }
 
       /* FAQ Section */
-      .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-      .faq { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 32px; }
-      .faq summary { font-weight: 600; font-size: 16px; margin-bottom: 12px; list-style: none; cursor: pointer; }
-      .faq summary::-webkit-details-marker { display: none; }
-      .faq p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.6; }
+      .faq-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.faq-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  border-radius: 12px;
+}
+
+.faq-card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--text-main);
+}
+
+.faq-answer {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .faq-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
       /* Feedback Form Section */
       .feedback { display: grid; grid-template-columns: 0.9fr 1.1fr; align-items: start; gap: 60px; padding-bottom: 120px; }
@@ -642,19 +669,27 @@
           </div>
         </section>
 
-        <section class="section faq-section" aria-labelledby="faqTitle">
-          <div class="section-heading reveal">
-            <div>
-              <div class="eyebrow">QUICK ANSWERS</div>
-              <h2 id="faqTitle">Before you install.</h2>
-            </div>
-          </div>
-          <div class="faq-grid">
-            <details class="faq reveal"><summary>What exactly does VIDADOR track?</summary><p>Sleep sessions, hydration entries, steps, and meditation sessions. Settings provides theme and privacy controls around those local records.</p></details>
-            <details class="faq reveal reveal-delay-1"><summary>How does sleep tracking work?</summary><p>It is manual: start a sleep session, wake the session later, and VIDADOR computes the elapsed duration and writes it to the chronological history.</p></details>
-            <details class="faq reveal reveal-delay-2"><summary>Does VIDADOR use step hardware?</summary><p>The StepScreen uses the device pedometer stream and also supports retrospective numeric entry for individual calendar days.</p></details>
-            <details class="faq reveal reveal-delay-3"><summary>Where does my data go?</summary><p>The repository describes local Hive storage, zero telemetry, and no cloud synchronization bridge. The intent is local data sovereignty.</p></details>
-          </div>
+        <section class="faq-section reveal">
+  <div class="section-tag">QUICK ANSWERS</div>
+  <h2>Before you install.</h2>
+  <div class="faq-grid">
+    <div class="faq-card">
+      <h3>What exactly does VIDADOR track?</h3>
+      <p class="faq-answer">Vidador tracks essential health metrics including sleep windows, nutritional logs, and physical movement without background telemetry.</p>
+    </div>
+    <div class="faq-card">
+      <h3>How does sleep tracking work?</h3>
+      <p class="faq-answer">You manually log the precise moment sleep starts and ends, keeping control entirely in your hands.</p>
+    </div>
+    <div class="faq-card">
+      <h3>Does VIDADOR use step hardware?</h3>
+      <p class="faq-answer">Yes, it interfaces directly with your device's native step counter to map your movement onto a unified yearly grid.</p>
+    </div>
+    <div class="faq-card">
+      <h3>Where does my data go?</h3>
+      <p class="faq-answer">Nowhere. All records remain completely on your local device stored inside an encrypted SQLite database.</p>
+    </div>
+  </div>
         </section>
 
         <section class="section feedback" id="feedback" aria-labelledby="feedbackTitle">
@@ -672,7 +707,7 @@
               </label>
               <label>
                 <span>Title</span>
-                <input id="feedbackTitleInput" name="title" type="text" autocomplete="off" placeholder="What should VIDADOR improve next?" required />
+                <input id="feedbackTitleInput" name="title" type="text" autocomplete="off" placeholder="Any problem occur?" required />
               </label>
               <label>
                 <span>Message</span>
